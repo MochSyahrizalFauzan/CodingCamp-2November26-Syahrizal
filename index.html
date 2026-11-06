@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Life Dashboard</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <main class="dashboard">
+    <!-- 1. Greeting / Clock -->
+    <section class="section greeting-section" aria-label="Greeting and clock">
+      <h1 class="greeting" id="greeting">Good morning</h1>
+      <p class="clock" id="clock">--:--:--</p>
+      <p class="date" id="date"></p>
+      <form class="preferences-form" id="preferences-form">
+        <label for="name-input">Your name</label>
+        <div class="preferences-controls">
+          <input type="text" id="name-input" maxlength="50" placeholder="Enter your name" />
+          <button type="submit" class="btn">Save name</button>
+          <button type="button" class="btn" id="theme-toggle" aria-pressed="false">Dark mode</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- 2. Focus Timer -->
+    <section class="section timer-section" aria-label="Focus timer">
+      <h2 class="section-heading">Focus Timer</h2>
+      <p class="timer-display" id="timer-display">25:00</p>
+      <div class="timer-controls">
+        <button type="button" class="btn" id="timer-start">Start</button>
+        <button type="button" class="btn" id="timer-stop">Stop</button>
+        <button type="button" class="btn" id="timer-reset">Reset</button>
+      </div>
+      <p class="timer-notification" id="timer-notification" role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- 3. To-Do List -->
+    <section class="section todo-section" aria-label="To-do list">
+      <h2 class="section-heading">To-Do List</h2>
+      <form class="todo-form" id="todo-form">
+        <input type="text" id="todo-input" class="todo-input"
+               maxlength="255" placeholder="Add a task…" aria-label="New task" />
+        <button type="submit" class="btn">Add</button>
+      </form>
+      <p class="todo-error" id="todo-error" role="alert"></p>
+      <ul class="todo-list" id="todo-list"></ul>
+    </section>
+
+    <!-- 4. Quick Links -->
+    <section class="section links-section" aria-label="Quick links">
+      <h2 class="section-heading">Quick Links</h2>
+      <form class="links-form" id="links-form">
+        <input type="text" id="link-name" class="link-input"
+               maxlength="50" placeholder="Name" aria-label="Link name" />
+        <input type="url" id="link-url" class="link-input"
+               maxlength="2048" placeholder="https://example.com" aria-label="Link URL" />
+        <button type="submit" class="btn">Add</button>
+      </form>
+      <p class="links-error" id="links-error" role="alert"></p>
+      <div class="links-list" id="links-list"></div>
+    </section>
+
+    <!-- Global persistence error banner -->
+    <p class="storage-error" id="storage-error" role="alert" hidden></p>
+  </main>
+  <script src="js/app.js"></script>
+</body>
+</html>

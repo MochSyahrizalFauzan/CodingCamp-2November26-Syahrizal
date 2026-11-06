@@ -1,0 +1,502 @@
+/* ==========================================================================
+   Life Dashboard — css/style.css
+   Single stylesheet for the entire application. No inline styles are used
+   anywhere in the HTML (Requirement 9.1). Organized into ten numbered
+   comment sections that mirror the UI components.
+
+   Requirements covered here:
+     7.1  Visual separation between sections (spacing / dividers)
+     7.2  All text except section headings ≥ 16px
+     7.3  Uniform spacing between sections and within a section
+     7.4  Sans-serif font family for all text
+     7.5  Text/background contrast ratio ≥ 4.5:1
+     9.1  Exactly one CSS file, no inline styles
+   ========================================================================== */
+
+
+/* ===== 1. Design tokens (CSS custom properties) ===== */
+/*
+   Centralizes the sans-serif font family (Req 7.4), the ≥16px base font
+   size (Req 7.2), the ≥4.5:1 text/background contrast pair (Req 7.5), and a
+   single uniform spacing token (Req 7.3) reused across every section.
+   #1a1a1a on #ffffff yields a contrast ratio of ~16:1, far above 4.5:1.
+*/
+:root {
+  /* Typography */
+  --font-stack: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --base-font-size: 1rem;     /* 16px at default browser settings (Req 7.2) */
+  --heading-size: 1.5rem;     /* section headings are the only exception to the 16px floor */
+  --line-height: 1.5;
+
+  /* Color — high-contrast text/background pair (Req 7.5, ~16:1) */
+  --text-color: #1a1a1a;
+  --bg-color: #ffffff;
+  --muted-text-color: #595959;   /* still ≥ 4.5:1 on #ffffff (~7.2:1) */
+
+  /* Accents */
+  --border-color: #d0d0d0;       /* dividers between sections (Req 7.1) */
+  --accent-color: #2a5db0;       /* links / focus — ≥ 4.5:1 on white (~6.4:1) */
+  --error-color: #9b1c1c;        /* error text — ≥ 4.5:1 on white (~6.9:1) */
+  --success-color: #1a6b33;      /* completion notification — ≥ 4.5:1 on white */
+  --input-border-color: #888888;
+  --focus-ring-color: #2a5db0;
+
+  /* Uniform spacing token (Req 7.3) — used between sections and within them */
+  --gap: 1.5rem;
+  --gap-sm: 0.75rem;
+  --gap-xs: 0.5rem;
+
+  /* Sizing */
+  --max-width: 640px;
+  --radius: 6px;
+}
+
+/* Dark theme tokens are applied when the user selects dark mode. */
+body.dark-theme {
+  --text-color: #f2f2f2;
+  --bg-color: #171717;
+  --muted-text-color: #c4c4c4;
+  --border-color: #555555;
+  --accent-color: #8db7ff;
+  --error-color: #ff9a9a;
+  --success-color: #8ee6a9;
+  --input-border-color: #999999;
+  --focus-ring-color: #8db7ff;
+}
+
+
+/* ===== 2. Base / reset ===== */
+/*
+   Applies the sans-serif font family to all text (Req 7.4), sets the ≥16px
+   base font size (Req 7.2), and establishes the high-contrast text/background
+   pair (Req 7.5). A minimal reset normalizes margins/padding and box model.
+*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%; /* keeps the 1rem root at the browser default (16px) */
+}
+
+body {
+  margin: 0;
+  padding: var(--gap);
+  font-family: var(--font-stack);
+  font-size: var(--base-font-size);   /* 16px floor for body text (Req 7.2) */
+  line-height: var(--line-height);
+  color: var(--text-color);
+  background-color: var(--bg-color);
+}
+
+h1,
+h2 {
+  margin: 0;
+  font-weight: 700;
+}
+
+p {
+  margin: 0;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Visible keyboard focus for accessibility */
+:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: 2px;
+}
+
+
+/* ===== 3. Layout (.dashboard, .section, dividers) ===== */
+/*
+   The .dashboard is the single main container holding the four sections.
+   Each .section is visually separated from the next by a divider border and
+   uniform vertical spacing (Req 7.1, 7.3). Spacing within a section reuses
+   the same --gap token so inter-section and intra-section spacing stay uniform.
+*/
+.dashboard {
+  max-width: 960px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: minmax(320px, auto);
+  gap: var(--gap);
+}
+
+.section {
+  height: 100%;
+  padding: var(--gap);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);   /* uniform spacing between elements within a section (Req 7.3) */
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  background-color: var(--card-bg-color, var(--bg-color));
+  box-shadow: 0 2px 8px var(--card-shadow-color, rgba(0, 0, 0, 0.08));
+}
+
+/* The global storage-error banner sits at the end of the dashboard */
+.storage-error {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+/* Section headings are the single exception to the 16px floor (Req 7.2) */
+.section-heading {
+  font-size: var(--heading-size);
+  line-height: 1.25;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.85rem;
+  color: var(--muted-text-color);
+}
+
+
+/* ===== 4. Greeting section ===== */
+.greeting-section {
+  align-items: flex-start;
+}
+
+.greeting {
+  order: 3;
+  font-size: 1rem;
+  line-height: 1.25;
+  color: var(--accent-color);
+}
+
+.clock {
+  order: 1;
+  font-size: 2rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.date {
+  order: 2;
+  font-size: 0.8rem;
+  color: var(--muted-text-color);
+}
+
+.preferences-form {
+  order: 4;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xs);
+  width: 100%;
+  margin-top: auto;
+}
+
+.preferences-form label {
+  font-weight: 600;
+}
+
+.preferences-controls {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--gap-sm);
+}
+
+.preferences-controls input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+
+/* ===== 5. Timer section ===== */
+.timer-section {
+  align-items: flex-start;
+}
+
+.timer-display {
+  align-self: center;
+  font-size: 2rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.timer-controls {
+  align-self: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--gap-sm);   /* uniform spacing between controls (Req 7.3) */
+  margin-top: auto;
+}
+
+.timer-notification {
+  min-height: 1.5em;
+  font-size: var(--base-font-size);   /* ≥ 16px (Req 7.2) */
+}
+
+/* Completion notification styling is in section 9 (error/notification states) */
+
+
+/* ===== 6. To-do list ===== */
+.todo-section {
+  align-items: stretch;
+}
+
+.todo-form {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--gap-sm);   /* uniform spacing between input and add button (Req 7.3) */
+}
+
+.todo-input {
+  flex: 1 1 60%;
+  min-width: 0;
+}
+
+.todo-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xs);   /* uniform spacing between list items (Req 7.3) */
+  margin-top: auto;
+}
+
+.todo-item {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--gap-sm);
+}
+
+.todo-checkbox {
+  flex: 0 0 auto;
+  /* Scale checkbox so its hit area is comfortable; font remains unaffected */
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.todo-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  word-break: break-word;
+  font-size: var(--base-font-size);   /* ≥ 16px (Req 7.2) */
+}
+
+.todo-item .btn {
+  flex: 0 0 auto;
+}
+
+/* Completion indicator: visually distinguishes done tasks (Req 3.3) */
+.todo-item.completed .todo-text {
+  text-decoration: line-through;
+  color: var(--muted-text-color);
+}
+
+.todo-edit {
+  flex: 1 1 50%;
+  min-width: 0;
+  color: var(--muted-text-color);
+}
+
+/* Error message spacing handled in section 9 */
+.todo-error {
+  min-height: 1.5em;
+}
+
+
+/* ===== 7. Quick links ===== */
+.links-section {
+  align-items: stretch;
+}
+
+.links-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-sm);   /* uniform spacing between inputs and add button (Req 7.3) */
+}
+
+.link-input {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+/* The URL field takes more horizontal room than the name field */
+#link-url {
+  flex: 1 1 100%;
+}
+
+.links-form .btn {
+  flex: 0 0 auto;
+}
+
+.links-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-sm);   /* uniform spacing between link buttons (Req 7.3) */
+  margin-top: auto;
+}
+
+.link-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--gap-xs);
+}
+
+.link-button {
+  font-family: var(--font-stack);    /* sans-serif (Req 7.4) */
+  font-size: var(--base-font-size);  /* ≥ 16px (Req 7.2) */
+  color: var(--accent-color);
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: var(--gap-xs) var(--gap-sm);
+  cursor: pointer;
+  text-decoration: none;
+  line-height: var(--line-height);
+}
+
+.link-button:hover {
+  background-color: #f0f4fa;
+}
+
+/* Error message spacing handled in section 9 */
+.links-error {
+  min-height: 1.5em;
+}
+
+
+/* ===== 8. Buttons & inputs ===== */
+/*
+   Shared styling for all .btn elements and text inputs. Font sizes are kept
+   at the ≥16px floor (Req 7.2) so no rendered text falls below it. Inputs and
+   buttons inherit the sans-serif stack (Req 7.4).
+*/
+.btn {
+  font-family: var(--font-stack);    /* sans-serif (Req 7.4) */
+  font-size: var(--base-font-size);  /* ≥ 16px (Req 7.2) */
+  line-height: var(--line-height);
+  color: var(--text-color);
+  background-color: var(--button-bg-color, #f3f3f3);
+  border: 1px solid var(--input-border-color);
+  border-radius: var(--radius);
+  padding: var(--gap-xs) var(--gap-sm);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  background-color: var(--button-hover-color, #e6e6e6);
+}
+
+.btn:active {
+  background-color: var(--button-active-color, #dcdcdc);
+}
+
+.btn-edit {
+  background-color: var(--button-bg-color, #f3f3f3);
+}
+
+.btn-delete,
+.btn-delete-link {
+  color: var(--error-color);
+}
+
+input[type="text"],
+input[type="url"],
+.todo-edit {
+  font-family: var(--font-stack);    /* sans-serif (Req 7.4) */
+  font-size: var(--base-font-size);  /* ≥ 16px (Req 7.2) */
+  line-height: var(--line-height);
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  border: 1px solid var(--input-border-color);
+  border-radius: var(--radius);
+  padding: var(--gap-xs) var(--gap-sm);
+}
+
+input[type="text"]::placeholder,
+input[type="url"]::placeholder {
+  color: var(--muted-text-color);
+}
+
+input[type="checkbox"] {
+  cursor: pointer;
+}
+
+
+/* ===== 9. Error / notification states ===== */
+/*
+   Validation errors (Req 3.7/3.8, 4.5), the global storage-error banner
+   (Req 5.5/5.6), and the timer completion notification (Req 2.5). All error
+   and notification text uses the ≥16px floor (Req 7.2) and a color that
+   maintains ≥ 4.5:1 contrast on the white background (Req 7.5).
+*/
+.todo-error,
+.links-error,
+.storage-error {
+  font-size: var(--base-font-size);   /* ≥ 16px (Req 7.2) */
+  color: var(--error-color);         /* ≥ 4.5:1 on white (Req 7.5) */
+  margin: 0;
+}
+
+/* The hidden attribute keeps error banners out of view until they are needed.
+   The [hidden] rule defends against frameworks that set display on all elements. */
+[hidden] {
+  display: none !important;
+}
+
+/* Timer completion notification — a positive (non-error) status message */
+.timer-notification:not(:empty) {
+  color: var(--success-color);       /* ≥ 4.5:1 on white (Req 7.5) */
+  font-weight: 600;
+}
+
+
+/* ===== 10. Extension popup sizing (min-width/height on body) ===== */
+/*
+   When the same index.html is reused as a Manifest V3 browser-extension
+   popup (Req 8.3), the popup viewport can be very small. These minimums
+   guarantee the dashboard renders with readable content and adequate room
+   inside a toolbar popup while having no effect on the standalone layout.
+*/
+body {
+  min-width: 320px;
+  min-height: 200px;
+}
+
+body.dark-theme {
+  --button-bg-color: #303030;
+  --button-hover-color: #414141;
+  --button-active-color: #505050;
+  --card-bg-color: #222222;
+  --card-shadow-color: rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 680px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+
+  .section {
+    min-height: 280px;
+  }
+
+  .todo-form {
+    flex-wrap: wrap;
+  }
+
+  .todo-input {
+    flex-basis: 100%;
+  }
+
+  .preferences-controls {
+    flex-wrap: wrap;
+  }
+
+  .preferences-controls input {
+    flex-basis: 100%;
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Life Dashboard",
+  "version": "1.0.0",
+  "description": "A personal productivity dashboard with a focus timer, tasks, and quick links.",
+  "action": {
+    "default_title": "Life Dashboard",
+    "default_popup": "index.html"
+  }
+}
